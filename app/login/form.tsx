@@ -13,7 +13,7 @@ export default function LoginForm() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:3000/auth/login', {
+      const res = await fetch('http://185.24.253.55:3000/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
