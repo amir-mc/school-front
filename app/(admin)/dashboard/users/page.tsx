@@ -16,6 +16,8 @@ export default function UsersPage() {
   const [query, setQuery] = useState("");
   const [role, setRole] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [classes, setClasses] = useState<{ id: string; name: string }[]>([]);
+  const [classId, setClassId] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -51,7 +53,29 @@ export default function UsersPage() {
 
     fetchUsers();
   }, []);
-  
+
+
+useEffect(() => {
+  const fetchClasses = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:3000/admin/classes", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch classes");
+
+      const data = await res.json();
+      setClasses(data);
+    } catch (err) {
+      console.error("Error fetching classes:", err);
+    }
+  };
+
+  fetchClasses();
+}, []);
   const handleDelete = async (id: string) => {
     const token = localStorage.getItem("token");
     const confirmed = confirm("آیا مطمئن هستید که می‌خواهید این کاربر را حذف کنید؟");
@@ -79,6 +103,7 @@ export default function UsersPage() {
   };
 
   const handleSearch = async (e: React.FormEvent) => {
+    
     e.preventDefault();
     setIsLoading(true);
     const token = localStorage.getItem("token");
@@ -88,7 +113,7 @@ export default function UsersPage() {
     const params = new URLSearchParams();
     if (query) params.append("query", query);
     if (role) params.append("role", role);
-
+    if (classId) params.append("classId", classId);
     console.log("Search URL:", `http://localhost:3000/admin/users?${params.toString()}`); // Debug
 
     try {
@@ -146,6 +171,20 @@ export default function UsersPage() {
           <option value="PARENT">والد</option>
           <option value="ADMIN">مدیر</option>
         </select>
+           {role === "STUDENT" && (
+       <select
+  value={classId}
+  onChange={(e) => setClassId(e.target.value)}
+  className="border px-3 py-2 rounded text-sm"
+>
+  <option value="">همه کلاس‌ها</option>
+  {classes.map((cls) => (
+    <option key={cls.id} value={cls.id}>
+      {cls.name}
+    </option>
+  ))}
+</select>
+)}
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
