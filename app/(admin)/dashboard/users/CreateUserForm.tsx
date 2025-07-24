@@ -9,9 +9,9 @@ export default function CreateUserForm() {
     password: "",
     nationalId: "",
     role: "STUDENT",
-    classId: ""
+    classId: "",
   });
-  
+
   const [classes, setClasses] = useState<{ id: string; name: string }[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,10 +23,13 @@ export default function CreateUserForm() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
+
+        if (!res.ok) throw new Error("Failed to fetch classes");
+
         const data = await res.json();
         setClasses(data);
       } catch (error) {
-        console.error("Error fetching classes:", error);
+        console.error("خطا در گرفتن کلاس‌ها:", error);
       }
     };
 
@@ -35,7 +38,7 @@ export default function CreateUserForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,6 +47,7 @@ export default function CreateUserForm() {
 
     try {
       const token = localStorage.getItem("token");
+
       const res = await fetch("http://localhost:3000/admin/users", {
         method: "POST",
         headers: {
@@ -56,106 +60,96 @@ export default function CreateUserForm() {
         }),
       });
 
-      if (res.ok) {
-        alert("کاربر با موفقیت ایجاد شد");
-        setFormData({
-          name: "",
-          username: "",
-          password: "",
-          nationalId: "",
-          role: "STUDENT",
-          classId: ""
-        });
-      } else {
+      if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || "خطا در ساخت کاربر");
+        throw new Error(err.message || "خطا در ثبت کاربر");
       }
+
+      alert("✅ کاربر با موفقیت ایجاد شد!");
+      setFormData({
+        name: "",
+        username: "",
+        password: "",
+        nationalId: "",
+        role: "STUDENT",
+        classId: "",
+      });
     } catch (error: any) {
-      alert("خطا: " + error.message);
+      alert("⚠️ " + error.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-lg mx-auto mt-10 bg-white p-8 rounded-lg shadow-md border border-gray-200">
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">ایجاد کاربر جدید</h2>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* National ID */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">کد ملی</span>
-          </label>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* کد ملی */}
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">کد ملی</label>
           <input
             type="text"
             name="nationalId"
             value={formData.nationalId}
             onChange={handleChange}
-            placeholder="کد ملی را وارد کنید"
             required
-            className="input input-bordered w-full"
+            placeholder="مثلاً 1234567890"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
 
-        {/* Full Name */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">نام کامل</span>
-          </label>
+        {/* نام کامل */}
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">نام کامل</label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="نام و نام خانوادگی"
             required
-            className="input input-bordered w-full"
+            placeholder="مثلاً امیر حسینی"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
 
-        {/* Username */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">نام کاربری</span>
-          </label>
+        {/* نام کاربری */}
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">نام کاربری</label>
           <input
             type="text"
             name="username"
             value={formData.username}
             onChange={handleChange}
-            placeholder="نام کاربری"
             required
-            className="input input-bordered w-full"
+            placeholder="مثلاً amir123"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
 
-        {/* Password */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">رمز عبور</span>
-          </label>
+        {/* رمز عبور */}
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">رمز عبور</label>
           <input
             type="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
-            placeholder="رمز عبور"
             required
-            className="input input-bordered w-full"
+            placeholder="رمز دلخواه"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
 
-        {/* Role */}
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">نقش کاربر</span>
-          </label>
-          <select 
+        {/* نقش */}
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">نقش کاربر</label>
+          <select
             name="role"
             value={formData.role}
             onChange={handleChange}
-            className="select select-bordered w-full"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           >
             <option value="STUDENT">دانش‌آموز</option>
             <option value="TEACHER">معلم</option>
@@ -164,20 +158,18 @@ export default function CreateUserForm() {
           </select>
         </div>
 
-        {/* Class (only for students) */}
+        {/* انتخاب کلاس فقط برای دانش‌آموز */}
         {formData.role === "STUDENT" && (
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">کلاس</span>
-            </label>
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">کلاس</label>
             <select
               name="classId"
               value={formData.classId}
               onChange={handleChange}
-              className="select select-bordered w-full"
-              required={formData.role === "STUDENT"}
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
             >
-              <option value="">انتخاب کلاس</option>
+              <option value="">-- انتخاب کلاس --</option>
               {classes.map((cls) => (
                 <option key={cls.id} value={cls.id}>
                   {cls.name}
@@ -187,14 +179,18 @@ export default function CreateUserForm() {
           </div>
         )}
 
-        {/* Submit Button */}
-        <div className="pt-4">
-          <button 
-            type="submit" 
-            className={`btn btn-primary w-full ${isSubmitting ? 'loading' : ''}`}
+        {/* دکمه ارسال */}
+        <div>
+          <button
+            type="submit"
             disabled={isSubmitting}
+            className={`w-full py-2 px-4 rounded-md text-white font-semibold ${
+              isSubmitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            } transition`}
           >
-            {isSubmitting ? 'در حال ثبت...' : 'ایجاد کاربر'}
+            {isSubmitting ? "در حال ثبت..." : "ایجاد کاربر"}
           </button>
         </div>
       </form>
