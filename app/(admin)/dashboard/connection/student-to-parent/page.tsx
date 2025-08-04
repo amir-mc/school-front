@@ -17,7 +17,7 @@ export default function AssignParentToStudent() {
     fetch('http://localhost:3000/admin/parents/list', { headers: { Authorization: `Bearer ${token}` } })
       .then(res => res.json())
       .then(data => setParents(data))
-  }, [])
+  }, []) 
 
   const handleAssign = async () => {
     const token = localStorage.getItem('token')
