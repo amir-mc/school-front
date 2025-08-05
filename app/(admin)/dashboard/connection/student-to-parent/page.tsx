@@ -10,7 +10,7 @@ export default function AssignParentToStudent() {
 
   useEffect(() => {
     const token = localStorage.getItem('token')
-    fetch('http://localhost:3000/admin/students/list', { headers: { Authorization: `Bearer ${token}` } })
+    fetch('http://localhost:3000/admin/students', { headers: { Authorization: `Bearer ${token}` } })
       .then(res => res.json())
       .then(data => setStudents(data))
 
@@ -21,7 +21,7 @@ export default function AssignParentToStudent() {
 
   const handleAssign = async () => {
     const token = localStorage.getItem('token')
-    const res = await fetch('http://localhost:3000/admin/assign-parent-to-student', {
+    const res = await fetch('http://localhost:3000/admin/students/assign-parent', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
