@@ -57,7 +57,7 @@ export default function AssignParentToStudent() {
         ))}
       </select>
 
-      <label className="block mb-2 font-medium">والد</label>
+      <label className="block mb-2 font-medium">والدین</label>
       <select
         className="w-full p-2 border rounded mb-4"
         onChange={(e) => setSelectedParentId(e.target.value)}
