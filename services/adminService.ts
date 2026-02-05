@@ -1,22 +1,142 @@
 // services/adminService.ts
-import api from '../lib/api';
+import api from '@/lib/api';
 
-export const getTotalUsers = (token: string) => 
-  api.get('/admin/users/count/all', { 
-    headers: { Authorization: `Bearer ${token}` } 
+export const getTotalUsers = () => 
+  api.get('/admin/users/count/all');
+
+export const getStudentCount = () => 
+  api.get('/admin/users/count/students');
+
+export const getTeacherCount = () => 
+  api.get('/admin/users/count/teachers');
+
+export const getParentCount = () => 
+  api.get('/admin/users/count/parents');
+
+export const getClassCount = () => 
+  api.get('/admin/classes/count');
+
+export const getClasses = () =>
+  api.get('/admin/classes');
+
+
+
+export const createUser = (userData: any) =>
+  api.post('/admin/users', userData);
+
+export const deleteUser = (userId: string) =>
+  api.delete(`/admin/users/${userId}`);
+
+export const updateUser = (userId: string, userData: any) =>
+  api.patch(`/admin/users/${userId}`, userData);
+
+export const getUserById = (userId: string) =>
+  api.get(`/admin/users/${userId}`);
+
+export const confirmUser = (userId: string, classId?: string) => {
+  const payload = classId ? { classId } : {};
+  return api.post(`/admin/users/confirm/${userId}`, payload);
+};
+
+export const updateUserConfirmation = (userId: string, isConfirmed: boolean) =>
+  api.patch(`/admin/users/${userId}`, { isConfirmed });
+
+
+export const getUsers = (params?: { 
+  query?: string; 
+  role?: string; 
+  classId?: string;
+  isConfirmed?: boolean;
+}) =>
+  api.get('/admin/users', { 
+    params: {
+      ...params,
+      includeStudentDetails: true // اضافه کردن این پارامتر
+    }
   });
 
-export const getStudentCount = (token: string) => 
-  api.get('/admin/users/count/students', { 
-    headers: { Authorization: `Bearer ${token}` } 
-  });
 
-export const getTeacherCount = (token: string) => 
-  api.get('/admin/users/count/teachers', { 
-    headers: { Authorization: `Bearer ${token}` } 
-  });
 
-export const getClassCount = (token: string) => 
-  api.get('/admin/classes/count', { 
-    headers: { Authorization: `Bearer ${token}` } 
-  });
+
+export interface Class {
+  id: string;
+  name: string;
+  grade: number;
+  teachers?: Array<{
+    id: string;
+    user: {
+      id: string;
+      name: string;
+    };
+  }>;
+  students?: Array<{
+    id: string;
+    user: {
+      id: string;
+      name: string;
+    };
+  }>;
+}
+
+export interface CreateClassData {
+  name: string;
+  grade: number;
+  teacherIds?: string[];
+}
+
+
+export const getClassById = (classId: string) =>
+  api.get(`/admin/classes/${classId}`);
+
+export const createClass = (classData: CreateClassData) =>
+  api.post('/admin/classes', classData);
+
+export const updateClass = (classId: string, classData: { name?: string; grade?: number }) =>
+  api.patch(`/admin/classes/${classId}`, classData);
+
+export const deleteClass = (classId: string) =>
+  api.delete(`/admin/classes/${classId}`);
+
+export const addTeacherToClass = (classId: string, teacherId: string) =>
+  api.post(`/admin/classes/${classId}/teachers/${teacherId}`);
+
+export const removeTeacherFromClass = (classId: string, teacherId: string) =>
+  api.delete(`/admin/classes/${classId}/teachers/${teacherId}`);
+
+export const addStudentToClass = (classId: string, studentId: string) =>
+  api.post(`/admin/classes/${classId}/students/${studentId}`);
+
+
+// در services/adminService.ts - اضافه کردن سرویس‌های ویرایش
+export const getGradeById = (gradeId: string) =>
+  api.get(`/grades/${gradeId}`);
+
+export const updateGrade = (gradeId: string, gradeData: { subject?: string; value?: number }) =>
+  api.patch(`/grades/${gradeId}`, gradeData);
+
+export const getStudentGrades = (studentId: string) =>
+  api.get(`/grades/student/${studentId}`);
+
+
+
+export const getSchedules = () =>
+  api.get('/schedules');
+
+export const deleteSchedule = (scheduleId: string) =>
+  api.delete(`/schedules/${scheduleId}`);
+
+export const createSchedule = (scheduleData: {
+  classId: string;
+  day: string;
+  subject: string;
+  startTime: string;
+  endTime: string;
+}) => api.post('/schedules', scheduleData);
+
+export const updateSchedule = (scheduleId: string, scheduleData: {
+  classId?: string;
+  day?: string;
+  subject?: string;
+  startTime?: string;
+  endTime?: string;
+}) => api.patch(`/schedules/${scheduleId}`, scheduleData);

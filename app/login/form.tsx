@@ -25,14 +25,14 @@ export default function LoginForm() {
 
       // ذخیره‌سازی توکن در localStorage یا cookie
       localStorage.setItem('token', data.access_token);
-
-      window.location.href = '/dashboard'; // مسیر بعد از ورود موفق
+  
+      window.location.href = '/dashboard'; 
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setLoading(false);  
     }
-  };
+  };  
 
   return (
   <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-md overflow-hidden space-y-6">
@@ -103,9 +103,9 @@ export default function LoginForm() {
     </div>
 
     <div className="text-center text-sm text-gray-500">
-      حساب کاربری ندارید؟{' '}
+     مشکل در ورود به حساب کاربری یا پسورد خود را گم کردید؟{' '}
       <a href="#" className="text-blue-600 hover:text-blue-800 hover:underline">
-        ثبت نام کنید
+       اینجا کلیک کنید
       </a>
     </div>
   </div>
